@@ -2,25 +2,22 @@
 set nocompatible  " turn off Vi capability
 filetype off      " it will not to create a problem for vim-plug
 
+
+let g:is_termux = has('unix') && $HOME =~ '/data/data/com.termux'
+
 " Starting vim-plug
 call plug#begin('~/.vim/plugged/')
 
 " Common Plugins
 Plug 'tpope/vim-sensible'      " sane defaults
-Plug 'preservim/nerdtree'      " file browswer
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'        " fuzzy finder
 Plug 'itchyny/lightline.vim'   " statusline
 
 " Desktop only plugins
-if !exists('$TERMUX_VERSION')
+if !g:is_termux
 	Plug 'dense-analysis/ale'    " async lightning
-	Plug 'junegunn/vim-peekaboo' " register preview
-endif
-
-" Termux only plugins
-if exists('$TERMUX_VERSION')
-	Plug 'vim-scripts/termux-vim-plugin'
+	Plug 'presevim/nerdtree' " register preview
 endif
 
 call plug#end()
@@ -35,29 +32,24 @@ set clipboard+=unnamedplus
 set hidden
 set wrap
 set cursorline
-
-" Performance tweak
-
 set ttyfast
 set updatetime=300
 set shortmess+=I
-
-" Leader key & Mappings
 let mapleader = " "
-nnoremap <Leader>n :NERDTreeToggle<CR>
+
 nnoremap <Leader>f :Files<CR>          " FZF file finder 
 nnoremap <Leader>b :Buffers<CR>
 
 " Desktop-only Overrides
-if !exists('$TERMUX_VERSION')
-	set swapfile
+if !g:is_termux
+	set termguicolors
 	set undodir=~/.vim/undodir
 	set undofile
-	autocmd VimEnter * :set termguicolors
+	nnoremap <Leader>n :NERDTreeToggle<CR>
 endif
 
 " Termux-only Overrides
-if exists('$TERMUX_VERSION')
+if g:is_termux
   set directory=~/.vim/tmp//    " swap files folder
   set ttimeoutlen=50            " faster key-chord detection
   set background=dark           " better contrast on Android
